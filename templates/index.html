@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Recomendador de Restaurantes MTY</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f6f8;
+      padding: 30px;
+      margin: 0;
+    }
+    .container {
+      max-width: 520px;
+      margin: 0 auto;
+      background: white;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    h2 { text-align: center; color: #222; margin-top: 0; }
+    label { font-weight: bold; margin-top: 14px; display: block; color: #444; }
+    select, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 6px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+      font-size: 14px;
+    }
+    button {
+      background-color: #0056b3;
+      color: white;
+      font-weight: bold;
+      border: none;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+    button:hover { background-color: #004085; }
+    #resultado {
+      display: none;
+      margin-top: 25px;
+      padding: 15px;
+      border-radius: 8px;
+      background: #e9f7ef;
+      border: 1px solid #c3e6cb;
+    }
+    #resultado h3 { margin-top: 0; color: #155724; }
+    .dato { margin: 6px 0; color: #333; }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>Elección de Restaurantes</h2>
+    
+    <label>Tipo de comida:</label>
+    <select id="tipo_comida">
+      <option value="Carne">Carne / Cortes / Cabrito</option>
+      <option value="Tacos">Tacos</option>
+      <option value="Pizza / Italiana">Pizza / Italiana</option>
+      <option value="Asiatica">Asiática</option>
+      <option value="Mariscos">Mariscos</option>
+    </select>
+
+    <label>Preferencia vegetariana:</label>
+    <select id="vegetariano">
+      <option value="0">0: No requiero menú vegetariano</option>
+      <option value="1">1: Opciones vegetarianas o 100% vegetariano</option>
+    </select>
+
+    <label>Presupuesto:</label>
+    <select id="presupuesto">
+      <option value="1">1: Económico (&lt; $150 MXN)</option>
+      <option value="2">2: Medio ($150 - $350 MXN)</option>
+      <option value="3">3: Medio-Alto ($350 - $700 MXN)</option>
+      <option value="4">4: Alto (&gt; $700 MXN)</option>
+    </select>
+
+    <label>Ambiente:</label>
+    <select id="ambiente">
+      <option value="1">1: Familiar (mesas grandes, tranquilo, niños)</option>
+      <option value="2">2: Casual (amigos, relajado, comida rápida/snack)</option>
+      <option value="3">3: Cita / Formal (romántico o ejecutivo)</option>
+      <option value="4">4: Noche / Bar (música, bebidas, desvelada)</option>
+    </select>
+
+    <button id="btn-consultar" onclick="obtenerRecomendacion()">Consultar Red Neuronal</button>
+
+    <div id="resultado">
+      <h3>Sugerencia del Modelo:</h3>
+      <div class="dato"><strong>Restaurante:</strong> <span id="res_nombre"></span></div>
+      <div class="dato"><strong>Zona:</strong> <span id="res_zona"></span></div>
+      <div class="dato"><strong>Categoría:</strong> <span id="res_tipo"></span></div>
+      <div class="dato"><strong>Distancia aprox.:</strong> <span id="res_distancia"></span></div>
+      <div class="dato"><strong>Nivel de afinidad:</strong> <span id="res_afinidad"></span></div>
+    </div>
+  </div>
+
+  <script>
+   async function obtenerRecomendacion() {
+      const btn = document.getElementById('btn-consultar');
+      btn.innerText = "Obteniendo ubicación y consultando...";
+      btn.disabled = true;
+
+      // Ubicación por defecto (Centro de Monterrey)
+      let latitud = 25.6667;
+      let longitud = -100.3167;
+
+      // 1. Intentar obtener GPS real del navegador
+      if (navigator.geolocation) {
+        try {
+          const posicion = await new Promise((resolve, reject) => {
+            navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 5000 });
+          });
+          latitud = posicion.coords.latitude;
+          longitud = posicion.coords.longitude;
+        } catch (err) {
+          console.log("No se pudo obtener el GPS exacto; usando centro de Monterrey como base.");
+        }
+      }
+
+      // 2. Armar el envío
+      const payload = {
+        tipo_comida: document.getElementById('tipo_comida').value,
+        vegetariano: document.getElementById('vegetariano').value,
+        presupuesto: document.getElementById('presupuesto').value,
+        ambiente: document.getElementById('ambiente').value,
+        latitud: latitud,
+        longitud: longitud
+      };
+
+      try {
+        const respuesta = await fetch('/recomendar', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const datos = await respuesta.json();
+
+        if (!respuesta.ok || datos.error) {
+          alert("Detalle del error en Python:\n\n" + (datos.error || respuesta.statusText));
+          return;
+        }
+
+        document.getElementById('resultado').style.display = 'block';
+        document.getElementById('res_nombre').innerText = datos.nombre;
+        document.getElementById('res_zona').innerText = datos.zona;
+        document.getElementById('res_tipo').innerText = datos.tipo_comida;
+        document.getElementById('res_distancia').innerText = datos.distancia;
+        document.getElementById('res_afinidad').innerText = datos.afinidad;
+      } catch (error) {
+        alert("Ocurrió un error en la conexión: " + error.message);
+      } finally {
+        btn.innerText = "Consultar Red Neuronal";
+        btn.disabled = false;
+      }
+    }
+  </script>
+
+</body>
+</html>

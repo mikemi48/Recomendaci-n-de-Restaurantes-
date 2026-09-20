@@ -1,0 +1,18 @@
+id, restaurante,zona,tipo_comida,ambiente,presupuesto,vegetariano,latitud,longitud
+0,El Gran Pastor (Gonzalitos),Gonzalitos,Carne,1,3,0,25.6881,-100.3547
+1,San Carlos,Morones Prieto / Loma Larga,Carne,1,3,0,25.6601,-100.3456
+2,El Rey del Cabrito,Centro,Carne,1,4,0,25.6685,-100.3098
+3,Asador La Vaca Argentina,San Jeronimo,Carne,2,4,0,25.6740,-100.3700
+4,Sonora Grill,Plaza Cumbres,Carne,4,4,0,25.7289,-100.3952
+5,Tacos Primo,Mitras Centro,Tacos,2,1,0,25.6920,-100.3450
+6,Taqueria Juarez,Centro,Tacos,1,1,0,25.6698,-100.3142
+7,Tacos Atarantados,Tecnologico,Tacos,4,2,0,25.6512,-100.2921
+8,Ianilli,Barrio Antiguo,Pizza / Italiana,3,3,1,25.6667,-100.3045
+9,Di Pasquale,Obispado,Pizza / Italiana,1,2,1,25.6761,-100.3411
+10,Sierra Madre Brewing Co.,Gonzalitos,Pizza / Italiana,4,2,0,25.6845,-100.3523
+11,Yamasan Ramen House,Tecnologico,Asiatica,2,2,0,25.6515,-100.2910
+12,Oriental Wok,San Jeronimo,Asiatica,1,3,1,25.6750,-100.3712
+13,Sr. Tanaka,San Jeronimo,Asiatica,3,4,0,25.6748,-100.3725
+14,Los Arcos,Morones Prieto,Mariscos,1,3,0,25.6690,-100.3340
+15,La Panga de Nico,San Jeronimo,Mariscos,2,2,0,25.6728,-100.3689
+16,Botanero Moritas,Barrio Antiguo,Mariscos,4,2,0,25.6658,-100.3061
