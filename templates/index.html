@@ -96,10 +96,15 @@
       <div class="dato"><strong>Distancia aprox.:</strong> <span id="res_distancia"></span></div>
       <div class="dato"><strong>Nivel de afinidad:</strong> <span id="res_afinidad"></span></div>
     </div>
+
+    <div class="mt-4" id="contenedor-mapa" style="display: none; margin-top: 20px;">
+      <h3 style="color: #155724; font-size: 16px; margin-bottom: 8px;">Ubicación del Restaurante:</h3>
+      <iframe id="iframe-mapa" src="" width="100%" height="280px" style="border:0; border-radius: 8px;"></iframe>
+    </div>
   </div>
 
   <script>
-   async function obtenerRecomendacion() {
+    async function obtenerRecomendacion() {
       const btn = document.getElementById('btn-consultar');
       btn.innerText = "Obteniendo ubicación y consultando...";
       btn.disabled = true;
@@ -151,6 +156,11 @@
         document.getElementById('res_tipo').innerText = datos.tipo_comida;
         document.getElementById('res_distancia').innerText = datos.distancia;
         document.getElementById('res_afinidad').innerText = datos.afinidad;
+
+        // Mostrar y actualizar el mapa dinámicamente
+        const iframeMapa = document.getElementById('iframe-mapa');
+        iframeMapa.src = "{{ url_for('static', filename='mapa_recomendado.html') }}?" + new Date().getTime();
+        document.getElementById('contenedor-mapa').style.display = 'block';
       } catch (error) {
         alert("Ocurrió un error en la conexión: " + error.message);
       } finally {

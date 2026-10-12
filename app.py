@@ -5,6 +5,7 @@ import pandas as pd
 import numpy as np
 import tensorflow as tf
 from geopy.distance import geodesic
+import folium
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
@@ -43,7 +44,7 @@ def recomendar():
         lon_usr = float(datos.get('longitud', -100.3167))
 
         # 2. Inferencia de afinidad con la red neuronal
-        distancia_ref = 0.1  # Referencia de cercanía
+        distancia_ref = 0.1  
         vector = comida_vec + [ambiente_norm, presupuesto_norm, vegetariano_val, distancia_ref]
         vector_entrada = np.array([vector], dtype=np.float32)
 
@@ -66,10 +67,7 @@ def recomendar():
             prob_red = predicciones[i]
             d_km = geodesic((lat_usr, lon_usr), (float(fila[col_lat]), float(fila[col_lon]))).km
             
-            # Factor de cercanía (1.0 si está a 0 km, disminuye con la distancia)
             factor_cercania = max(0.05, 1.0 - (d_km / 25.0))
-            
-            # Puntuación final: 60% peso red neuronal + 40% proximidad física
             score_final = (prob_red * 0.6) + (factor_cercania * 0.4)
 
             if score_final > mejor_score:
@@ -80,8 +78,23 @@ def recomendar():
         restaurante = df.iloc[mejor_idx]
         afinidad_pct = float(predicciones[mejor_idx]) * 100.0
 
+        lat_rest = float(restaurante[col_lat])
+        lon_rest = float(restaurante[col_lon])
+        nombre_rest = str(restaurante[col_rest])
+
+        # 5. Generar y guardar el mapa interactivo con Folium en la carpeta static
+        mapa_restaurante = folium.Map(location=[lat_rest, lon_rest], zoom_start=15)
+        folium.Marker(
+            [lat_rest, lon_rest],
+            popup=nombre_rest,
+            tooltip="¡Tu restaurante recomendado!"
+        ).add_to(mapa_restaurante)
+        
+        os.makedirs("static", exist_ok=True)
+        mapa_restaurante.save("static/mapa_recomendado.html")
+
         return jsonify({
-            "nombre": str(restaurante[col_rest]),
+            "nombre": nombre_rest,
             "zona": str(restaurante[col_zona]) if col_zona else "Monterrey",
             "tipo_comida": str(restaurante[col_tipo]) if col_tipo else str(datos.get('tipo_comida')),
             "distancia": f"{mejor_distancia:.2f} km",

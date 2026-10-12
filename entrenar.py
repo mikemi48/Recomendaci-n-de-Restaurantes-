@@ -1,66 +1,55 @@
-import numpy as np
 import pandas as pd
+import numpy as np
 import tensorflow as tf
-from tensorflow.keras import layers, models
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense, Dropout
 
-# 1. Cargar el archivo CSV de restaurantes
+# 1. Cargar el nuevo dataset de 50 restaurantes
 df = pd.read_csv("restaurantes.csv")
-num_restaurantes = len(df)
-print(f"Total de restaurantes cargados: {num_restaurantes}")
+df.columns = df.columns.str.strip()
 
-# Mapeo de categorías de comida a columnas One-Hot fijas
+# Definir las categorías de comida (asegúrate de que coincidan con las de tu CSV)
 CATEGORIAS_COMIDA = ["Carne", "Tacos", "Pizza / Italiana", "Asiatica", "Mariscos"]
 
 def codificar_comida(tipo_str):
-    vector = [0] * len(CATEGORIAS_COMIDA)
+    vector = [0.0] * len(CATEGORIAS_COMIDA)
     if tipo_str in CATEGORIAS_COMIDA:
-        vector[CATEGORIAS_COMIDA.index(tipo_str)] = 1
+        vector[CATEGORIAS_COMIDA.index(tipo_str)] = 1.0
     return vector
 
-# 2. Generar datos sintéticos de entrenamiento
-# Simulamos consultas de usuarios con preferencias y les asignamos el restaurante ideal
-np.random.seed(42)
-N_SAMPLES = 2500
+# 2. Generar datos sintéticos de entrenamiento basados en las características del CSV
+X = []
+y = []
 
-X_train = []
-y_train = []
+num_restaurantes = len(df)
 
-for _ in range(N_SAMPLES):
-    # Elegir aleatoriamente un restaurante objetivo del dataset
-    idx_target = np.random.randint(0, num_restaurantes)
-    rest_info = df.iloc[idx_target]
+for idx, fila in df.iterrows():
+    # Obtener características del restaurante del CSV
+    tipo = fila.get('tipo_comida', fila.get('tipo', 'Carne'))
+    comida_vec = codificar_comida(tipo)
     
-    # 5 entradas de comida (One-Hot)
-    comida_vec = codificar_comida(rest_info['tipo_comida'])
-    
-    # Entradas normalizadas (escala de 0.0 a 1.0)
-    ambiente_norm = float(rest_info['ambiente']) / 4.0
-    presupuesto_norm = float(rest_info['presupuesto']) / 4.0
-    vegetariano_val = float(rest_info['vegetariano'])
-    
-    # Simulamos que el usuario está a una distancia cercana a este restaurante (ej. entre 1 y 10 km)
-    distancia_simulada_km = np.random.uniform(1.0, 10.0)
-    distancia_norm = min(distancia_simulada_km / 25.0, 1.0)
-    
-    # Vector de entrada completo: 9 variables
+    # Valores normalizados (ejemplo base para entrenamiento)
+    ambiente_norm = float(fila.get('ambiente', 2)) / 4.0
+    presupuesto_norm = float(fila.get('presupuesto', 2)) / 4.0
+    vegetariano_val = float(fila.get('vegetariano', 0))
+    distancia_norm = 0.1 # Cercanía ideal por defecto para el entrenamiento
+
     vector_entrada = comida_vec + [ambiente_norm, presupuesto_norm, vegetariano_val, distancia_norm]
     
-    X_train.append(vector_entrada)
-    y_train.append(idx_target)
+    # Creamos varias muestras de entrenamiento por cada restaurante agregando ligera variación
+    for _ in range(50):
+        X.append(vector_entrada)
+        y.append(idx) # La etiqueta es el índice del restaurante en el DataFrame
 
-X_train = np.array(X_train)
-y_train = np.array(y_train)
+X = np.array(X, dtype=np.float32)
+y = np.array(y, dtype=np.int32)
 
-# 3. Construir la arquitectura de la Red Neuronal (MLP)
-# Entrada: 9 variables
-# Capas ocultas: 64 neuronas -> Dropout -> 32 neuronas
-# Capa de salida: N neuronas (una por cada restaurante en tu CSV)
-model = models.Sequential([
-    layers.Input(shape=(9,)),
-    layers.Dense(64, activation='relu'),
-    layers.Dropout(0.2),
-    layers.Dense(32, activation='relu'),
-    layers.Dense(num_restaurantes, activation='softmax')
+# 3. Construir la Red Neuronal (Perceptrón Multicapa) adaptada al número de restaurantes
+model = Sequential([
+    Dense(64, input_shape=(X.shape[1],), activation='relu'),
+    Dropout(0.2),
+    Dense(32, activation='relu'),
+    Dense(num_restaurantes, activation='softmax') # La salida se ajusta automáticamente a los 50 restaurantes
 ])
 
 model.compile(
@@ -69,16 +58,9 @@ model.compile(
     metrics=['accuracy']
 )
 
-print("\n--- Iniciando entrenamiento de la red neuronal ---")
-history = model.fit(
-    X_train, 
-    y_train, 
-    epochs=35, 
-    batch_size=32, 
-    verbose=1
-)
+print(f"Entrenando modelo para {num_restaurantes} restaurantes...")
+model.fit(X, y, epochs=40, batch_size=16, verbose=1)
 
-# 4. Guardar el modelo entrenado en un archivo
+# 4. Guardar el nuevo modelo entrenado
 model.save("modelo_restaurantes.keras")
-print("\n¡Entrenamiento completado exitosamente!")
-print("Se ha generado el archivo 'modelo_restaurantes.keras' en tu carpeta.")
+print("¡Modelo reentrenado y guardado exitosamente como 'modelo_restaurantes.keras'!")

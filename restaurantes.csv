@@ -16,3 +16,37 @@ id, restaurante,zona,tipo_comida,ambiente,presupuesto,vegetariano,latitud,longit
 14,Los Arcos,Morones Prieto,Mariscos,1,3,0,25.6690,-100.3340
 15,La Panga de Nico,San Jeronimo,Mariscos,2,2,0,25.6728,-100.3689
 16,Botanero Moritas,Barrio Antiguo,Mariscos,4,2,0,25.6658,-100.3061
+17,La Embajada,Tecnológico,Asiatica,2,1,1,25.6435,-100.2811
+18,Fonda San Francisco,Tecnológico,Asiatica,4,2,1,25.6408,-100.2853
+19,Los Girasoles,Obispado,Pizza / Italiana,1,1,0,25.7078,-100.3303
+20,El Pablito,Gonzalitos,Mariscos,1,2,1,25.7179,-100.339
+21,Carajillo Monterrey,Cumbres,Asiatica,3,3,0,25.6853,-100.3593
+22,Taquería Doña Tota,Gonzalitos,Asiatica,2,1,0,25.6485,-100.3441
+23,Tacos Orinoco (Tec),Tecnológico,Mariscos,2,1,0,25.7422,-100.3104
+24,Tacos el Pata,Barrio Antiguo,Asiatica,1,4,0,25.7281,-100.2782
+25,Taquería El Fogoncito,Centro,Pizza / Italiana,4,3,0,25.7283,-100.3643
+26,Tacos Tony,Cumbres,Tacos,1,1,0,25.6699,-100.3262
+27,Pizzería La Loggia,Obispado,Tacos,4,3,1,25.6579,-100.2836
+28,Capriccio Pizza,Gonzalitos,Carne,4,4,0,25.719,-100.2646
+29,D'Vinos Pizza,San Jeronimo,Carne,1,1,1,25.7176,-100.3644
+30,Pizza Rev,Centro,Tacos,3,1,0,25.6529,-100.3231
+31,Trattoria Amici,San Jeronimo,Tacos,3,3,0,25.665,-100.3173
+32,Ryoshi (Valle Oriente),Tecnológico,Mariscos,3,3,0,25.6722,-100.3187
+33,Suntory Monterrey,Mitras Centro,Pizza / Italiana,4,4,0,25.6999,-100.331
+34,Thai Market,Contry,Tacos,4,3,1,25.7269,-100.3121
+35,Nippon Now,Contry,Mariscos,1,2,0,25.6958,-100.2812
+36,Kinto,Gonzalitos,Tacos,2,1,1,25.7188,-100.3217
+37,Pez Vela,Mitras Centro,Carne,3,4,1,25.7001,-100.293
+38,Cabo San Lucas Mariscos,Tecnológico,Carne,2,4,1,25.7254,-100.309
+39,Mariscos Don Artemio,Tecnológico,Pizza / Italiana,3,2,1,25.6839,-100.302
+40,Playa Azul,San Jeronimo,Carne,4,4,1,25.7432,-100.358
+41,Bahía de Banderas,Barrio Antiguo,Pizza / Italiana,1,3,0,25.681,-100.3356
+42,La Nacional (Tec),San Jeronimo,Pizza / Italiana,3,4,0,25.6569,-100.3006
+43,El Gran Pastor (Tec),Gonzalitos,Tacos,3,2,0,25.6495,-100.2799
+44,Centenario 107,Tecnológico,Tacos,1,3,1,25.7431,-100.3245
+45,Hot Mamma's,Cumbres,Pizza / Italiana,4,2,0,25.73,-100.3563
+46,La Félix Cantina,Barrio Antiguo,Carne,1,3,0,25.6873,-100.3404
+47,Taquería Juárez Sucursal Sur,Gonzalitos,Asiatica,1,2,0,25.7163,-100.3139
+48,Mochomos (Milenium),Tecnológico,Pizza / Italiana,4,4,0,25.7363,-100.316
+49,Nueve Asador,Contry,Mariscos,2,3,0,25.7,-100.271
+50,San José Comida Casera,Centro,Asiatica,3,4,0,25.7332,-100.322
