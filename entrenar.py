@@ -4,11 +4,11 @@ import tensorflow as tf
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Dropout
 
-# 1. Cargar el nuevo dataset de 50 restaurantes
+# 1. Cargar el dataset de 50 restaurantes
 df = pd.read_csv("restaurantes.csv")
 df.columns = df.columns.str.strip()
 
-# Definir las categorías de comida (asegúrate de que coincidan con las de tu CSV)
+# Definir las categorías de comida exactas
 CATEGORIAS_COMIDA = ["Carne", "Tacos", "Pizza / Italiana", "Asiatica", "Mariscos"]
 
 def codificar_comida(tipo_str):
@@ -17,39 +17,44 @@ def codificar_comida(tipo_str):
         vector[CATEGORIAS_COMIDA.index(tipo_str)] = 1.0
     return vector
 
-# 2. Generar datos sintéticos de entrenamiento basados en las características del CSV
+# 2. Generar datos sintéticos robustos de entrenamiento
 X = []
 y = []
 
 num_restaurantes = len(df)
 
 for idx, fila in df.iterrows():
-    # Obtener características del restaurante del CSV
     tipo = fila.get('tipo_comida', fila.get('tipo', 'Carne'))
     comida_vec = codificar_comida(tipo)
     
-    # Valores normalizados (ejemplo base para entrenamiento)
-    ambiente_norm = float(fila.get('ambiente', 2)) / 4.0
-    presupuesto_norm = float(fila.get('presupuesto', 2)) / 4.0
-    vegetariano_val = float(fila.get('vegetariano', 0))
-    distancia_norm = 0.1 # Cercanía ideal por defecto para el entrenamiento
+    # Valores base del restaurante normalizados
+    amb_base = float(fila.get('ambiente', 2)) / 4.0
+    pres_base = float(fila.get('presupuesto', 2)) / 4.0
+    veg_base = float(fila.get('vegetariano', 0))
+    distancia_norm = 0.1 
 
-    vector_entrada = comida_vec + [ambiente_norm, presupuesto_norm, vegetariano_val, distancia_norm]
+    vector_base = comida_vec + [amb_base, pres_base, veg_base, distancia_norm]
     
-    # Creamos varias muestras de entrenamiento por cada restaurante agregando ligera variación
-    for _ in range(50):
-        X.append(vector_entrada)
-        y.append(idx) # La etiqueta es el índice del restaurante en el DataFrame
+    # Ampliamos a 100 muestras por restaurante con ligera variación para mejorar la generalización
+    for _ in range(100):
+        variacion_amb = np.clip(amb_base + np.random.normal(0, 0.05), 0.0, 1.0)
+        variacion_pres = np.clip(pres_base + np.random.normal(0, 0.05), 0.0, 1.0)
+        
+        vector_variante = comida_vec + [variacion_amb, variacion_pres, veg_base, distancia_norm]
+        X.append(vector_variante)
+        y.append(idx)
 
 X = np.array(X, dtype=np.float32)
 y = np.array(y, dtype=np.int32)
 
-# 3. Construir la Red Neuronal (Perceptrón Multicapa) adaptada al número de restaurantes
+# 3. Construir la Red Neuronal (Perceptrón Multicapa optimizado)
 model = Sequential([
-    Dense(64, input_shape=(X.shape[1],), activation='relu'),
+    Dense(128, input_shape=(X.shape[1],), activation='relu'),
     Dropout(0.2),
+    Dense(64, activation='relu'),
+    Dropout(0.1),
     Dense(32, activation='relu'),
-    Dense(num_restaurantes, activation='softmax') # La salida se ajusta automáticamente a los 50 restaurantes
+    Dense(num_restaurantes, activation='softmax')
 ])
 
 model.compile(
@@ -58,9 +63,10 @@ model.compile(
     metrics=['accuracy']
 )
 
-print(f"Entrenando modelo para {num_restaurantes} restaurantes...")
-model.fit(X, y, epochs=40, batch_size=16, verbose=1)
+print(f"Entrenando modelo avanzado para {num_restaurantes} restaurantes...")
+# Subimos a 100 épocas para afinar los pesos y mejorar el nivel de afinidad
+model.fit(X, y, epochs=100, batch_size=16, verbose=1)
 
-# 4. Guardar el nuevo modelo entrenado
+# 4. Guardar el modelo actualizado
 model.save("modelo_restaurantes.keras")
-print("¡Modelo reentrenado y guardado exitosamente como 'modelo_restaurantes.keras'!")
+print("¡Modelo reentrenado, optimizado y guardado exitosamente como 'modelo_restaurantes.keras'!")

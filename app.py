@@ -58,7 +58,7 @@ def recomendar():
         col_lat = cols_lower.get('latitud', df.columns[-2])
         col_lon = cols_lower.get('longitud', df.columns[-1])
 
-        # 4. Ponderar afinidad de la red con la cercanía en km
+        # 4. Encontrar el mejor restaurante evaluando el score ponderado (50% red, 50% cercanía)
         mejor_score = -1.0
         mejor_idx = 0
         mejor_distancia = 0.0
@@ -68,7 +68,7 @@ def recomendar():
             d_km = geodesic((lat_usr, lon_usr), (float(fila[col_lat]), float(fila[col_lon]))).km
             
             factor_cercania = max(0.05, 1.0 - (d_km / 25.0))
-            score_final = (prob_red * 0.6) + (factor_cercania * 0.4)
+            score_final = (prob_red * 0.5) + (factor_cercania * 0.5)
 
             if score_final > mejor_score:
                 mejor_score = score_final
@@ -81,6 +81,8 @@ def recomendar():
         lat_rest = float(restaurante[col_lat])
         lon_rest = float(restaurante[col_lon])
         nombre_rest = str(restaurante[col_rest])
+
+        print(f"Mejor seleccionado: {nombre_rest} con afinidad {afinidad_pct:.1f}%")
 
         # 5. Generar y guardar el mapa interactivo con Folium en la carpeta static
         mapa_restaurante = folium.Map(location=[lat_rest, lon_rest], zoom_start=15)
